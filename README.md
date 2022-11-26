@@ -28,11 +28,11 @@
 - 3회 시도까지 매칭이 되지 않거나 매칭을 할 수 있는 경우의 수가 없으면 에러 메시지를 출력한다.
 ```
 
-```java
+```kotlin
 > 코드 예시
         
-List<String> crewNames; // 파일에서 로드한 크루 이름 목록
-List<String> shuffledCrew = Randoms.shuffle(crewNames); // 섞인 크루 이름 목록
+val crewNames: List<String> // 파일에서 로드한 크루 이름 목록
+val shuffledCrew: List<String> = Randoms.shuffle(crewNames) // 섞인 크루 이름 목록
 
 // 페어 매칭 & 검증
 
