@@ -351,4 +351,4 @@ public class Crew {
 
 ## 📝 License
 
-This project is [MIT](https://github.com/no1msh/precourse-study-pair-matching/blob/master/LICENSE) licensed.
+This project is [MIT](https://github.com/no1msh/precourse-study-pair-matching/blob/main/LICENSE.md) licensed.
