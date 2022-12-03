@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 
 internal class ApplicationTest : NsTest() {
     @Test
-    fun 짝수_인원_페어_매칭() {
+    fun `짝수_인원_페어_매칭`() {
         assertShuffleTest(
             {
                 run("1", "백엔드, 레벨1, 자동차경주", "Q")
@@ -19,7 +19,7 @@ internal class ApplicationTest : NsTest() {
     }
 
     @Test
-    fun 없는_미션에_대한_예외_처리() {
+    fun `없는_미션에_대한_예외_처리`() {
         assertSimpleTest {
             runException("1", "백엔드, 레벨1, 오징어게임")
             assertThat(output()).contains(ERROR_MESSAGE)
