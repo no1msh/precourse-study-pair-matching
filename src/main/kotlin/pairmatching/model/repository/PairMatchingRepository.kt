@@ -9,6 +9,6 @@ interface PairMatchingRepository {
 
     fun loadMissions(): Boolean
 
-    fun isExistsMission(mission: Mission): Result<Boolean>
+    fun isExistsMission(mission: Mission): Boolean
 
 }

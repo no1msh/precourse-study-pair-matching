@@ -1,6 +1,7 @@
 package pairmatching.model.repository
 
 import pairmatching.model.data.crew.Crew
+import pairmatching.model.data.crew.CrewPairList
 import pairmatching.model.data.crew.CrewPairMatchingMap
 import pairmatching.model.data.mission.Course
 import pairmatching.model.data.mission.Mission
@@ -8,8 +9,12 @@ import pairmatching.model.resources.Resource
 import pairmatching.model.resources.ResourceManager
 import pairmatching.model.data.result.Result
 import pairmatching.model.data.result.Result.*
+import pairmatching.model.shuffler.CrewShuffler
+import pairmatching.model.shuffler.RandomCrewShuffler
 
 class PairMatchingRepositoryImpl : PairMatchingRepository {
+
+    private val shuffler: CrewShuffler = CrewShuffler(RandomCrewShuffler())
 
     private lateinit var backendCrews: List<Crew>
     private lateinit var frontendCrews: List<Crew>
@@ -35,13 +40,8 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         return true
     }
 
-    override fun isExistsMission(mission: Mission): Result<Boolean> {
-        val history = pairMatchingHistory[mission]
-
-        return if (history != null) {
-            Success(history.isNotEmpty())
-        } else {
-            Failure()
-        }
+    override fun isExistsMission(mission: Mission): Boolean {
+        return pairMatchingHistory.containsKey(mission)
     }
+
 }
