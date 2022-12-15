@@ -1,14 +1,12 @@
 package pairmatching.model.data.crew
 
-class CrewPair : Iterable<Crew> {
+class CrewPair(private val crews: List<Crew>) : Iterable<Crew> {
 
-    private val crews: List<Crew>
+    val size: Int
+        get() = crews.size
 
-    constructor(first: Crew, second: Crew) {
-        crews = listOf(first, second)
-    }
-    constructor(first: Crew, second: Crew, third: Crew) {
-        crews = listOf(first, second, third)
+    init {
+        require(crews.size in MIN_SIZE..MAX_SIZE)
     }
 
     override fun iterator(): Iterator<Crew> = crews.iterator()
@@ -22,5 +20,10 @@ class CrewPair : Iterable<Crew> {
 
     override fun hashCode(): Int {
         return crews.hashCode()
+    }
+
+    companion object {
+        const val MIN_SIZE = 2
+        const val MAX_SIZE = 3
     }
 }

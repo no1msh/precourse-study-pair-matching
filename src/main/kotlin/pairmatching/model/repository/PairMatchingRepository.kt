@@ -1,6 +1,8 @@
 package pairmatching.model.repository
 
+import pairmatching.model.data.crew.CrewPairList
 import pairmatching.model.data.mission.Mission
+import pairmatching.model.data.result.Result
 
 interface PairMatchingRepository {
 
@@ -12,4 +14,5 @@ interface PairMatchingRepository {
 
     fun isExistsPairMatchingHistory(mission: Mission): Boolean
 
+    fun matchCrewPair(mission: Mission): Result<CrewPairList>
 }

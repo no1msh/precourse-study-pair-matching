@@ -1,16 +1,19 @@
 package pairmatching.model.repository
 
 import pairmatching.model.data.crew.Crew
+import pairmatching.model.data.crew.CrewPair
 import pairmatching.model.data.crew.CrewPairList
 import pairmatching.model.data.crew.CrewPairMatchingMap
 import pairmatching.model.data.mission.Course
+import pairmatching.model.data.mission.Level
 import pairmatching.model.data.mission.Mission
 import pairmatching.model.resources.Resource
 import pairmatching.model.resources.ResourceManager
-import pairmatching.model.data.result.Result
-import pairmatching.model.data.result.Result.*
 import pairmatching.model.shuffler.CrewShuffler
 import pairmatching.model.shuffler.RandomCrewShuffler
+import pairmatching.model.data.result.Result
+import pairmatching.model.data.result.Result.Success
+import pairmatching.model.data.result.Result.Failure
 
 class PairMatchingRepositoryImpl : PairMatchingRepository {
 
@@ -48,5 +51,69 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         check(isExistsMission(mission)) { "Not exists mission" }
 
         return pairMatchingHistory[mission].isNotEmpty()
+    }
+
+    override fun matchCrewPair(mission: Mission): Result<CrewPairList> {
+        check(pairMatchingHistory.containsKey(mission)) { "Not exists mission" }
+
+        val crews = when (mission.course) {
+            Course.BACKEND -> backendCrews
+            Course.FRONTEND -> frontendCrews
+        }
+
+        val shuffledCrewPairs = shuffled(mission, crews, MATCHING_TRY_COUNT)
+
+        return if (shuffledCrewPairs != null) {
+            pairMatchingHistory[mission] = shuffledCrewPairs
+            Success(shuffledCrewPairs)
+        } else {
+            Failure()
+        }
+    }
+
+    private tailrec fun shuffled(
+        mission: Mission,
+        crews: List<Crew>,
+        count: Int
+    ): CrewPairList? {
+        if (count == 0) {
+            return null
+        }
+        val shuffled = shuffler.shuffled(crews)
+        val crewPairs = makeCrewPairList(shuffled)
+
+        return if (checkOtherMission(mission, crewPairs)) {
+            crewPairs
+        } else {
+            shuffled(mission, crews, count - 1)
+        }
+    }
+
+    private fun makeCrewPairList(crews: List<Crew>): CrewPairList {
+        val crewPairs = if (crews.size % 2 == 0) {
+            crews.chunked(2, ::CrewPair)
+        } else {
+            crews.dropLast(3)
+                .chunked(2, ::CrewPair)
+                .plusElement(CrewPair(crews.takeLast(3)))
+        }
+
+        return CrewPairList(crewPairs)
+    }
+
+    private fun checkOtherMission(mission: Mission, crewPairs: CrewPairList): Boolean {
+        for (level in Level.dropOf(mission.level)) {
+            val otherMission = mission.copy(level = level)
+            val otherCrewPairs = pairMatchingHistory[otherMission]
+
+            if (otherCrewPairs.anyDuplicated(crewPairs)) {
+                return false
+            }
+        }
+        return true
+    }
+
+    companion object {
+        private const val MATCHING_TRY_COUNT = 3
     }
 }

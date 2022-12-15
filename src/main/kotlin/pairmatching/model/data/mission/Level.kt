@@ -8,5 +8,7 @@ enum class Level(val value: String) {
     LEVEL4("레벨4"),
     LEVEL5("레벨5"),;
 
-    // 추가 기능 구현
+    companion object {
+        fun dropOf(level: Level): List<Level> = values().dropWhile { it == level }
+    }
 }
