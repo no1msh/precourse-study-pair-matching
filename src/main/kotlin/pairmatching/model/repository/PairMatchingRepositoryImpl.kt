@@ -1,9 +1,6 @@
 package pairmatching.model.repository
 
-import pairmatching.model.data.crew.Crew
-import pairmatching.model.data.crew.CrewPair
-import pairmatching.model.data.crew.CrewPairList
-import pairmatching.model.data.crew.CrewPairMatchingMap
+import pairmatching.model.data.crew.*
 import pairmatching.model.data.mission.Course
 import pairmatching.model.data.mission.Level
 import pairmatching.model.data.mission.Mission
@@ -19,13 +16,17 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
 
     private val shuffler: CrewShuffler = CrewShuffler(RandomCrewShuffler())
 
-    private lateinit var backendCrews: List<Crew>
-    private lateinit var frontendCrews: List<Crew>
+    private lateinit var crews: CrewMap
     private lateinit var pairMatchingHistory: CrewPairMatchingMap
 
     override fun loadCrews(): Boolean {
-        backendCrews = readCrewNames(Course.BACKEND) ?: return false
-        frontendCrews = readCrewNames(Course.FRONTEND) ?: return false
+        val backendCrews = readCrewNames(Course.BACKEND) ?: return false
+        val frontendCrews = readCrewNames(Course.FRONTEND) ?: return false
+
+        crews = CrewMap(
+            Course.BACKEND to backendCrews,
+            Course.FRONTEND to frontendCrews,
+        )
 
         return true
     }
@@ -56,10 +57,7 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
     override fun matchCrewPair(mission: Mission): Result<CrewPairList> {
         check(isExistsMission(mission)) { "Not exists mission" }
 
-        val crews = when (mission.course) {
-            Course.BACKEND -> backendCrews
-            Course.FRONTEND -> frontendCrews
-        }
+        val crews = crews[mission.course]
 
         val shuffledCrewPairs = shuffled(mission, crews, MATCHING_TRY_COUNT)
 
