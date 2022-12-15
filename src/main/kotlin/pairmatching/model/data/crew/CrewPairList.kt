@@ -5,4 +5,6 @@ class CrewPairList(
 ) : Iterable<CrewPair> {
 
     override fun iterator(): Iterator<CrewPair> = crewPairs.iterator()
+
+    fun isNotEmpty(): Boolean = crewPairs.isNotEmpty()
 }
