@@ -4,4 +4,5 @@ interface PairMatchingRepository {
 
     fun loadCrews(): Boolean
 
+    fun loadMissions(): Boolean
 }
