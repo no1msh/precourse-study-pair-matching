@@ -14,4 +14,8 @@ class CrewPairList(
         }
         return false
     }
+
+    companion object {
+        fun empty(): CrewPairList = CrewPairList(emptyList())
+    }
 }

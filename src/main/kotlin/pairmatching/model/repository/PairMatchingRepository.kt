@@ -17,4 +17,6 @@ interface PairMatchingRepository {
     fun matchCrewPair(mission: Mission): Result<CrewPairList>
 
     fun getCrewPairs(mission: Mission): CrewPairList
+
+    fun clearAllPairMatchingHistory()
 }

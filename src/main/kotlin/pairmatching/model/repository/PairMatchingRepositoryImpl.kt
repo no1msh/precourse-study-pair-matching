@@ -50,11 +50,11 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
     override fun isExistsPairMatchingHistory(mission: Mission): Boolean {
         check(isExistsMission(mission)) { "Not exists mission" }
 
-        return pairMatchingHistory[mission].isNotEmpty()
+        return pairMatchingHistory[mission]!!.isNotEmpty()
     }
 
     override fun matchCrewPair(mission: Mission): Result<CrewPairList> {
-        check(pairMatchingHistory.containsKey(mission)) { "Not exists mission" }
+        check(isExistsMission(mission)) { "Not exists mission" }
 
         val crews = when (mission.course) {
             Course.BACKEND -> backendCrews
@@ -118,6 +118,10 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         check(isExistsPairMatchingHistory(mission)) { "Not exists pair matching history" }
 
         return pairMatchingHistory[mission]
+    }
+
+    override fun clearAllPairMatchingHistory() {
+        pairMatchingHistory.clearAllValues()
     }
 
     companion object {

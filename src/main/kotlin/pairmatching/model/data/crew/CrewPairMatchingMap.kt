@@ -2,10 +2,10 @@ package pairmatching.model.data.crew
 
 import pairmatching.model.data.mission.Mission
 
-class CrewPairMatchingMap(missions: List<Mission>) {
+class CrewPairMatchingMap(missions: List<Mission>) : Iterable<Map.Entry<Mission, CrewPairList>> {
 
     private val elements: MutableMap<Mission, CrewPairList> =
-        missions.associateWith { CrewPairList(emptyList()) }.toMutableMap()
+        missions.associateWith { CrewPairList.empty() }.toMutableMap()
 
     operator fun get(mission: Mission): CrewPairList {
         return elements[mission]!!
@@ -15,7 +15,17 @@ class CrewPairMatchingMap(missions: List<Mission>) {
         elements[mission] = crewPairs
     }
 
+    override fun iterator(): Iterator<Map.Entry<Mission, CrewPairList>> {
+        return (elements as Map<Mission, CrewPairList>).iterator()
+    }
+
     fun containsKey(mission: Mission): Boolean {
         return elements.containsKey(mission)
+    }
+
+    fun clearAllValues() {
+        elements.entries.forEach {
+            it.setValue(CrewPairList.empty())
+        }
     }
 }
