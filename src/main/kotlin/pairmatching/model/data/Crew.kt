@@ -1,8 +1,6 @@
 package pairmatching.model.data
 
 data class Crew(
-    private val course: Course,
-    private val name: String,
-) {
-
-}
+    val course: Course,
+    val name: String,
+)
