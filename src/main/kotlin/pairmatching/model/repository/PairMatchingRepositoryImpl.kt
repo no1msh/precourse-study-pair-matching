@@ -50,7 +50,7 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
     override fun isExistsPairMatchingHistory(mission: Mission): Boolean {
         check(isExistsMission(mission)) { "Not exists mission" }
 
-        return pairMatchingHistory[mission]!!.isNotEmpty()
+        return pairMatchingHistory[mission].isNotEmpty()
     }
 
     override fun matchCrewPair(mission: Mission): Result<CrewPairList> {
