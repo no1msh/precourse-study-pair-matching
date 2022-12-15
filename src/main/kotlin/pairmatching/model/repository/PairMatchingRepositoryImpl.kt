@@ -113,6 +113,13 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         return true
     }
 
+    override fun getCrewPairs(mission: Mission): CrewPairList {
+        check(isExistsMission(mission)) { "Not exists mission" }
+        check(isExistsPairMatchingHistory(mission)) { "Not exists pair matching history" }
+
+        return pairMatchingHistory[mission]
+    }
+
     companion object {
         private const val MATCHING_TRY_COUNT = 3
     }

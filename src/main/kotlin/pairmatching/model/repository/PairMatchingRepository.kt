@@ -15,4 +15,6 @@ interface PairMatchingRepository {
     fun isExistsPairMatchingHistory(mission: Mission): Boolean
 
     fun matchCrewPair(mission: Mission): Result<CrewPairList>
+
+    fun getCrewPairs(mission: Mission): CrewPairList
 }
