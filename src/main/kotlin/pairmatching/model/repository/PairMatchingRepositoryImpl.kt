@@ -44,4 +44,9 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         return pairMatchingHistory.containsKey(mission)
     }
 
+    override fun isExistsPairMatchingHistory(mission: Mission): Boolean {
+        check(isExistsMission(mission)) { "Not exists mission" }
+
+        return pairMatchingHistory[mission].isNotEmpty()
+    }
 }
