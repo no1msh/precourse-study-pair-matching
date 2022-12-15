@@ -2,9 +2,9 @@ package pairmatching.model.shuffler
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import pairmatching.model.data.Course
+import pairmatching.model.data.mission.Course
 
-import pairmatching.model.data.Crew
+import pairmatching.model.data.crew.Crew
 
 internal class CrewShufflerTest {
 

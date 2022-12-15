@@ -1,4 +1,4 @@
-package pairmatching.model.data
+package pairmatching.model.data.mission
 
 enum class Course(val value: String) {
 

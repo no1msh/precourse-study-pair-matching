@@ -1,7 +1,7 @@
 package pairmatching.model.shuffler
 
 import camp.nextstep.edu.missionutils.Randoms
-import pairmatching.model.data.Crew
+import pairmatching.model.data.crew.Crew
 
 class RandomCrewShuffler : ICrewShuffler {
 
