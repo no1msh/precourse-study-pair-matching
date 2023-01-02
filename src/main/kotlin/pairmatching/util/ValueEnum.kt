@@ -19,8 +19,8 @@ inline fun <reified E> valueEnumOf(value: String): E
 }
 
 inline fun <reified E> valueEnumContains(value: String): Boolean
-        where E : Enum<E>,
-              E : ValueEnum<E>
+    where E : Enum<E>,
+          E : ValueEnum<E>
 {
     return enumValues<E>().any { it.value == value }
 }
