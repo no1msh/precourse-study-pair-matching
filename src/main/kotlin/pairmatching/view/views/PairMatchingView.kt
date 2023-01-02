@@ -1,19 +1,21 @@
 package pairmatching.view.views
 
+import pairmatching.model.data.mission.Mission
+import pairmatching.model.data.result.Result.*
 import pairmatching.model.repository.PairMatchingRepositoryImpl
 import pairmatching.view.io.InputView
 import pairmatching.view.io.OutputView
-import pairmatching.view.io.TaskCommand
+import pairmatching.view.io.data.TaskCommand
 import pairmatching.viewmodel.PairMatchingViewModel
 
 class PairMatchingView(
     private val inputView: InputView,
     private val outputView: OutputView,
-) : ConsoleView {
+) : ConsoleView() {
 
     private lateinit var viewModel: PairMatchingViewModel
 
-    override fun onInit() {
+    override fun onCreate() {
         viewModel = PairMatchingViewModel(
             PairMatchingRepositoryImpl()
         )
@@ -28,19 +30,84 @@ class PairMatchingView(
         outputView.printTaskList()
 
         when (repeatIfThrows(inputView::readTaskCommand)) {
-            TaskCommand.PairMatching -> TODO()
-            TaskCommand.PairInquiry -> TODO()
-            TaskCommand.PairInitialize -> TODO()
-            TaskCommand.Quit -> TODO()
+            TaskCommand.PairMatching -> runPairMatching()
+            TaskCommand.PairInquiry -> runInquiryPair()
+            TaskCommand.PairInitialize -> clearPairMatchingHistories()
+            TaskCommand.Quit -> finish()
         }
     }
 
-    override fun onFinish(): Boolean {
-        TODO("Not yet implemented")
+    private fun runPairMatching() {
+        outputView.printMissionDashboard(viewModel.missionDashboard)
+
+        val mission = readMissionForPairMatching()
+
+        when (val result = viewModel.runPairMatching(mission)) {
+            is Success -> outputView.printPairMatchingResult(result.data)
+            is Failure -> outputView.printPairMatchingError()
+        }
+    }
+
+    private tailrec fun readMissionForPairMatching(): Mission {
+        outputView.printSelectMission(viewModel.sampleMission)
+
+        val mission = repeatIfThrows {
+            inputView.readMission()
+        }
+
+        if (viewModel.isNotExistsMission(mission)) {
+            outputView.printNotExistsMissionError()
+            return readMissionForPairMatching()
+        }
+        if (viewModel.isExistsPairMatchingHistory(mission)) {
+            outputView.printExistsAlreadyPairMatchingHistory()
+
+            val biCommand = repeatIfThrows {
+                inputView.readBiCommand()
+            }
+            if (biCommand.isNo) {
+                return readMissionForPairMatching()
+            }
+        }
+
+        return mission
+    }
+
+    private fun runInquiryPair() {
+        outputView.printMissionDashboard(viewModel.missionDashboard)
+
+        val mission = readMissionForInquiryPair()
+        val result = viewModel.getPairMatchingHistory(mission)
+
+        outputView.printPairMatchingResult(result)
+    }
+
+    private tailrec fun readMissionForInquiryPair(): Mission {
+        outputView.printSelectMission(viewModel.sampleMission)
+
+        val mission = repeatIfThrows {
+            inputView.readMission()
+        }
+        if (viewModel.isNotExistsMission(mission)) {
+            outputView.printNotExistsMissionError()
+            return readMissionForInquiryPair()
+        }
+        if (viewModel.isNotExistsPairMatchingHistory(mission)) {
+            outputView.printNotExistsPairMatchingHistoryError()
+            return readMissionForInquiryPair()
+        }
+
+        return mission
+    }
+
+    private fun clearPairMatchingHistories() {
+        outputView.printInitializedPairMatchingHistories()
+
+        viewModel.clearPairMatchingHistories()
     }
 
     override fun onDestroy() {
-        TODO("Not yet implemented")
+        viewModel.clearPairMatchingHistories()
     }
 
     private inline fun <R> repeatIfThrows(block: () -> R): R {

@@ -1,12 +1,17 @@
 package pairmatching.view.views
 
-interface ConsoleView {
+abstract class ConsoleView {
 
-    fun onInit()
+    var isFinished: Boolean = false
+        private set
 
-    fun onResume()
+    abstract fun onCreate()
 
-    fun onFinish(): Boolean
+    abstract fun onResume()
 
-    fun onDestroy()
+    abstract fun onDestroy()
+
+    fun finish() {
+        isFinished = true
+    }
 }

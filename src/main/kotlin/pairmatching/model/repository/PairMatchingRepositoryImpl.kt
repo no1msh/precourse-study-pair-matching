@@ -2,7 +2,6 @@ package pairmatching.model.repository
 
 import pairmatching.model.data.crew.*
 import pairmatching.model.data.mission.Course
-import pairmatching.model.data.mission.Level
 import pairmatching.model.data.mission.Mission
 import pairmatching.model.resources.Resource
 import pairmatching.model.resources.ResourceManager
@@ -36,12 +35,12 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         Course.FRONTEND -> ResourceManager.readCrewNames(Resource.FRONTEND_CREW_FILE_NAME)
     }?.map { Crew(course, it) }
 
-    override fun loadMissions(): Boolean {
-        pairMatchingHistory = CrewPairMatchingMap(
-            ResourceManager.getAllMissions()
-        )
+    override fun loadMissions(): List<Mission> {
+        val missions = ResourceManager.getAllMissions()
 
-        return true
+        pairMatchingHistory = CrewPairMatchingMap(missions)
+
+        return missions
     }
 
     override fun isExistsMission(mission: Mission): Boolean {
@@ -54,15 +53,15 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         return pairMatchingHistory[mission].isNotEmpty()
     }
 
-    override fun matchCrewPair(mission: Mission): Result<CrewPairList> {
+    override fun runPairMatching(mission: Mission): Result<CrewPairList> {
         check(isExistsMission(mission)) { "Not exists mission" }
 
         val crews = crews[mission.course]
-
         val shuffledCrewPairs = shuffled(mission, crews, MATCHING_TRY_COUNT)
 
         return if (shuffledCrewPairs != null) {
             pairMatchingHistory[mission] = shuffledCrewPairs
+
             Success(shuffledCrewPairs)
         } else {
             Failure()
@@ -80,7 +79,7 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
         val shuffled = shuffler.shuffled(crews)
         val crewPairs = makeCrewPairList(shuffled)
 
-        return if (checkOtherMission(mission, crewPairs)) {
+        return if (checkDuplicatedOtherMissions(mission, crewPairs)) {
             crewPairs
         } else {
             shuffled(mission, crews, count - 1)
@@ -89,36 +88,37 @@ class PairMatchingRepositoryImpl : PairMatchingRepository {
 
     private fun makeCrewPairList(crews: List<Crew>): CrewPairList {
         val crewPairs = if (crews.size % 2 == 0) {
-            crews.chunked(2, ::CrewPair)
+            crews.asSequence()
+                .chunked(2)
+                .map(::CrewPair)
+                .toList()
         } else {
             crews.dropLast(3)
-                .chunked(2, ::CrewPair)
+                .asSequence()
+                .chunked(2)
+                .map(::CrewPair)
+                .toList()
                 .plusElement(CrewPair(crews.takeLast(3)))
         }
 
         return CrewPairList(crewPairs)
     }
 
-    private fun checkOtherMission(mission: Mission, crewPairs: CrewPairList): Boolean {
-        for (level in Level.dropOf(mission.level)) {
-            val otherMission = mission.copy(level = level)
-            val otherCrewPairs = pairMatchingHistory[otherMission]
-
-            if (otherCrewPairs.anyDuplicated(crewPairs)) {
-                return false
-            }
-        }
-        return true
+    private fun checkDuplicatedOtherMissions(mission: Mission, crewPairs: CrewPairList): Boolean {
+        return pairMatchingHistory
+            .filter { it.key.level == mission.level }
+            .filterNot { it.key == mission }
+            .none { it.value.anyDuplicated(crewPairs) }
     }
 
-    override fun getCrewPairs(mission: Mission): CrewPairList {
+    override fun getPairMatchingHistory(mission: Mission): CrewPairList {
         check(isExistsMission(mission)) { "Not exists mission" }
         check(isExistsPairMatchingHistory(mission)) { "Not exists pair matching history" }
 
         return pairMatchingHistory[mission]
     }
 
-    override fun clearAllPairMatchingHistory() {
+    override fun clearPairMatchingHistories() {
         pairMatchingHistory.clearAllValues()
     }
 

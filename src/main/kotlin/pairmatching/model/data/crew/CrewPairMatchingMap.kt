@@ -1,5 +1,7 @@
 package pairmatching.model.data.crew
 
+import pairmatching.model.data.mission.Course
+import pairmatching.model.data.mission.Level
 import pairmatching.model.data.mission.Mission
 
 class CrewPairMatchingMap(missions: List<Mission>) : Iterable<Map.Entry<Mission, CrewPairList>> {
@@ -9,6 +11,10 @@ class CrewPairMatchingMap(missions: List<Mission>) : Iterable<Map.Entry<Mission,
 
     operator fun get(mission: Mission): CrewPairList {
         return elements[mission]!!
+    }
+
+    fun get(course: Course, level: Level): List<CrewPairList> {
+        return emptyList()
     }
 
     operator fun set(mission: Mission, crewPairs: CrewPairList) {

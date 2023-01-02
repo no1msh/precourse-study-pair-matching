@@ -1,9 +1,11 @@
 package pairmatching.model.data.mission
 
-enum class Course(val value: String) {
+import pairmatching.util.ValueEnum
+
+enum class Course(override val value: String) : ValueEnum<Course> {
 
     BACKEND("백엔드"),
     FRONTEND("프론트엔드"),;
 
-    // 추가 기능 구현
+    override fun toString(): String = value
 }

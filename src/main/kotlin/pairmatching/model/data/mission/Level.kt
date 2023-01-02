@@ -1,6 +1,8 @@
 package pairmatching.model.data.mission
 
-enum class Level(val value: String) {
+import pairmatching.util.ValueEnum
+
+enum class Level(override val value: String) : ValueEnum<Level> {
 
     LEVEL1("레벨1"),
     LEVEL2("레벨2"),
@@ -8,7 +10,6 @@ enum class Level(val value: String) {
     LEVEL4("레벨4"),
     LEVEL5("레벨5"),;
 
-    companion object {
-        fun dropOf(level: Level): List<Level> = values().dropWhile { it == level }
-    }
+    override fun toString(): String = value
+
 }

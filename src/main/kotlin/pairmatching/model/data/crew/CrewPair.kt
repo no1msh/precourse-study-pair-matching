@@ -22,6 +22,10 @@ class CrewPair(private val crews: List<Crew>) : Iterable<Crew> {
         return crews.hashCode()
     }
 
+    override fun toString(): String {
+        return crews.toString()
+    }
+
     companion object {
         const val MIN_SIZE = 2
         const val MAX_SIZE = 3

@@ -8,15 +8,15 @@ interface PairMatchingRepository {
 
     fun loadCrews(): Boolean
 
-    fun loadMissions(): Boolean
+    fun loadMissions(): List<Mission>
 
     fun isExistsMission(mission: Mission): Boolean
 
     fun isExistsPairMatchingHistory(mission: Mission): Boolean
 
-    fun matchCrewPair(mission: Mission): Result<CrewPairList>
+    fun runPairMatching(mission: Mission): Result<CrewPairList>
 
-    fun getCrewPairs(mission: Mission): CrewPairList
+    fun getPairMatchingHistory(mission: Mission): CrewPairList
 
-    fun clearAllPairMatchingHistory()
+    fun clearPairMatchingHistories()
 }
